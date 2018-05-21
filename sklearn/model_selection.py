@@ -24,6 +24,7 @@ CLASSIFIERS = {
 
 
 def spotcheck(classifiers=CLASSIFIERS, X=None, y=None, score='roc_auc', cv=3, sort_by='mean'):
+    print("Evaluation metrics: " + str(score))
     results = {}
     for clf in classifiers.values():
         clf_name = clf.__class__.__name__
