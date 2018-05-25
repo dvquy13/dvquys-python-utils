@@ -1,4 +1,4 @@
-import pandas as pd
+import jupyter as pd
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
