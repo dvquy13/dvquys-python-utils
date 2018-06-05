@@ -1,2 +1,2 @@
 from .pandas import previewDf
-from .sklearn import plot_learning_curve
+from .sklearn_jupyter import plot_learning_curve
