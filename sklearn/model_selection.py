@@ -1,12 +1,13 @@
-import jupyter as pd
+import pandas as pd
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression, LinearRegression, Lasso, Ridge
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, RandomForestRegressor, GradientBoostingRegressor
 from sklearn import svm
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.naive_bayes import BernoulliNB
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier, XGBRegressor
+from sklearn.dummy import DummyClassifier, DummyRegressor
 
 from sklearn.model_selection import cross_val_score, cross_val_predict, GridSearchCV
 
@@ -17,16 +18,31 @@ CLASSIFIERS = {
     'SVC': svm.SVC(),
     'knn': KNeighborsClassifier(),
     'rf': RandomForestClassifier(),
-    'linearSVC': svm.LinearSVC(),
     'gb': GradientBoostingClassifier(),
-    'xgb': XGBClassifier()
+    'xgb': XGBClassifier(),
+    'dummy': DummyClassifier()
 }
 
 
-def spotcheck(classifiers=CLASSIFIERS, X=None, y=None, score='roc_auc', cv=3, sort_by='mean'):
+
+REGRESSORS = {
+    'lr': LinearRegression(),
+    'lasso': Lasso(),
+    'ridge': Ridge(),
+    'mlp': MLPRegressor(),
+    'SVC': svm.SVR(),
+    'knn': KNeighborsRegressor(),
+    'rf': RandomForestRegressor(),
+    'gb': GradientBoostingRegressor(),
+    'xgb': XGBRegressor(),
+    'dummy': DummyRegressor()
+}
+
+
+def spotcheck(estimators=CLASSIFIERS, X=None, y=None, score='roc_auc', cv=3, sort_by='mean'):
     print("Evaluation metrics: " + str(score))
     results = {}
-    for clf in classifiers.values():
+    for clf in estimators.values():
         clf_name = clf.__class__.__name__
         print("---\nSpotchecking for {}".format(clf_name))
         try:
@@ -34,6 +50,8 @@ def spotcheck(classifiers=CLASSIFIERS, X=None, y=None, score='roc_auc', cv=3, so
         except Exception as e:
             print(e.message)
             continue
+        print(scores.mean(), scores.std(), scores.min(), scores.max())
+        # print(scores.mean(), scores.std(), scores.mean() - scores.std() * 2, scores.mean() + scores.std() * 2)
         results[clf_name] = (
         scores.mean(), scores.std(), scores.mean() - scores.std() * 2, scores.mean() + scores.std() * 2)
     print("---")
