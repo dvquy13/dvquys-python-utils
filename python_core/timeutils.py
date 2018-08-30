@@ -1,12 +1,16 @@
 import time
 import sys
+import logging
+from importlib import reload
+reload(logging)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG, datefmt='%I:%M:%S')
 
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()
-        print('{} runtime: {:.0f}s'.format(method.__name__, (te - ts)))
+        logging.info('{} runtime: {:.0f}s'.format(method.__name__, (te - ts)))
         return result
     return timed
 
