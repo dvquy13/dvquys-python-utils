@@ -10,8 +10,9 @@ def timeit(method):
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()
+        walltime = te - ts
         logging.info('{} runtime: {:.0f}s'.format(method.__name__, (te - ts)))
-        return result
+        return result, walltime
     return timed
 
 def update_progress(job_title, progress):
