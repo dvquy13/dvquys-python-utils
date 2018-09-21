@@ -26,7 +26,10 @@ def rfe(estimator, X, y, step=1, acceptable_decrease=0.01, cv=None, scoring=None
     new_score = score_full_f
     loop_logs = {}
     i = 0
-    while (score_full_f - new_score) < acceptable_decrease:
+    if (score_full_f - new_score) >= acceptable_decrease:
+        print("Removing first feature results in a remarkable decrease")
+        return pd.DataFrame, []
+    while (score_full_f - new_score) < acceptable_decrease or (score_full_f - new_score) < 0:
         if X.shape[1] <= 3:
             break
         i += 1
@@ -37,7 +40,7 @@ def rfe(estimator, X, y, step=1, acceptable_decrease=0.01, cv=None, scoring=None
         new_score = cross_val_score(estimator, X, y, cv=cv, scoring=scoring).mean()
         loop_logs[i] = {'remove': worst_f[0], 'new_score': new_score}
         estimator.fit(X, y)
-    res = pd.DataFrame(loop_logs.values())
+    res = pd.DataFrame.from_dict(loop_logs, orient='index')
     res.index = res.index + len(zero_imp) + 1
     rfe_remove_f = res.iloc[:-1]['remove'].tolist() + zero_imp.tolist()
     return res, rfe_remove_f

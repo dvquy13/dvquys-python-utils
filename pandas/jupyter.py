@@ -1,4 +1,6 @@
 from IPython.display import display
+import sys
+
 def previewDf(df):
     display(df.head())
     display(df.shape)

@@ -20,7 +20,7 @@ CLASSIFIERS = {
     'SVC': svm.SVC(),
     'knn': KNeighborsClassifier(),
     'rf': RandomForestClassifier(),
-    'gb': GradientBoostingClassifier(),
+    # 'gb': GradientBoostingClassifier(),
     'xgb': XGBClassifier(),
     'dummy': DummyClassifier()
 }
