@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
 import sklearn
+from sklearn import preprocessing as sklearn_preprocessing
 import logging
 
 from functools import wraps
 from IPython.display import display
 
+from lib.dvquys_python_utils.pandas import utils as pandas_utils
 
 class ZscoreOutlierHandler():
     @staticmethod
@@ -14,7 +16,7 @@ class ZscoreOutlierHandler():
         if scaled.shape[1] == 0:
             logging.error("No numeric columns to convert")
             return df
-        ss = sklearn.preprocessing.StandardScaler()
+        ss = sklearn_preprocessing.StandardScaler()
         if cols is None:
             return pd.DataFrame(ss.fit_transform(scaled), columns=scaled.columns, index=scaled.index)
         else:
@@ -22,7 +24,7 @@ class ZscoreOutlierHandler():
             return pd.DataFrame(scaled, columns=scaled.columns, index=scaled.index)
 
     @staticmethod
-    @get_num_diff_rows(remove_kind='[outliers by zscore]')
+    @pandas_utils.get_num_diff_rows(remove_kind='[outliers by zscore]')
     def remove_outliers(
         df: pd.DataFrame,
         cols: list = None,

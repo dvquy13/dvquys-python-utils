@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import logging
+from functools import wraps
 
 def summarize_df(
     count_missing=True,
@@ -26,7 +28,7 @@ def summarize_df(
                     )   
                 )
             if count_outliers and df.select_dtypes(include='number').shape[1] > 0:
-                scaled = ZscoreOutlierHandler.convert_zscore(df)
+                scaled = outlier.ZscoreOutlierHandler.convert_zscore(df)
                 summary_df = summary_df.assign(
 
                     outlier_count = scaled.where(
@@ -77,3 +79,5 @@ def get_num_diff_rows(remove_kind='rows'):
             return result_df
         return _calc
     return _calc_diff
+
+from lib.dvquys_python_utils.pandas import outlier # handle circular import dependency
