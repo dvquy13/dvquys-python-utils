@@ -1,6 +1,8 @@
 import pandas as pd
+import numpy as np
+import logging
 
-from sklearn.linear_model import LogisticRegression, LinearRegression, Lasso, Ridge
+from sklearn.linear_model import LogisticRegressionCV, LinearRegression, Lasso, Ridge
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, RandomForestRegressor, GradientBoostingRegressor
 from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
@@ -11,10 +13,10 @@ from sklearn.dummy import DummyClassifier, DummyRegressor
 
 from sklearn.model_selection import cross_val_score, cross_val_predict, GridSearchCV, StratifiedShuffleSplit
 
-from dvquys_python_utils.python_core.timeutils import timeit, update_progress
+from lib.dvquys_python_utils.python_core.timeutils import timeit
 
 CLASSIFIERS = {
-    'lr': LogisticRegression(),
+    'lr': LogisticRegressionCV(),
     'mlp': MLPClassifier(),
     'naive': BernoulliNB(),
     'SVC': svm.SVC(),
@@ -42,29 +44,28 @@ REGRESSORS = {
 
 
 def spotcheck(estimators=CLASSIFIERS, X=None, y=None, score='roc_auc', cv=3, sort_by='mean'):
-    print("Evaluation metrics: " + str(score))
+    logging.info("Evaluation metrics: " + str(score))
     results = {}
 
-    @timeit
+    @timeit(get_time=True)
     def _eval(clf):
         scores = cross_val_score(estimator=clf, X=X, y=y, scoring=score, cv=cv)
-        # print(scores.mean(), scores.std(), scores.mean() - scores.std() * 2, scores.mean() + scores.std() * 2)
         return scores
         
     for clf in estimators.values():
         clf_name = clf.__class__.__name__
-        print("---\nSpotchecking for {}".format(clf_name))
+        logging.info("---\nSpotchecking for {}".format(clf_name))
         try:            
             scores, walltime = _eval(clf)
-            print("{:0.4f} {:0.4f} {:0.4f} {:0.4f} {:0.0f}s".format(scores.mean(), scores.std(), scores.min(), scores.max(), walltime))
+            logging.info("{:0.4f} {:0.4f} {:0.4f} {:0.4f} {:0.0f}s".format(scores.mean(), scores.std(), scores.min(), scores.max(), walltime))
         except Exception as e:
-            print(e.message)
+            logging.error(e)
             continue
         results[clf_name] = (
             scores.mean(), scores.std(), scores.mean() - scores.std() * 2, scores.mean() + scores.std() * 2, walltime
         )
         
-    print("---")
+    logging.info("---")
     results_df = pd.DataFrame.from_dict(results, orient='index') \
         .rename(columns={0: 'mean',
                          1: 'std',

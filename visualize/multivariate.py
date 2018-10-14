@@ -3,13 +3,13 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 plt.style.use('seaborn-ticks')
 
-from src.utils import preprocess_utils
+from lib.dvquys_python_utils.pandas import outlier as outlier_utils
 
 class PairViz():
     @staticmethod
     def pairplot(data: pd.DataFrame, cols: list, remove_outlier: bool = True, hue: str = None, **kwargs):
         if remove_outlier:
-            plot_data = preprocess_utils.ZscoreOutlierHandler.remove_outliers(data, cols, return_original_df=True)
+            plot_data = outlier_utils.ZscoreOutlierHandler.remove_outliers(data, cols, return_original_df=True)
         else:
             plot_data = data
         sns.pairplot(
